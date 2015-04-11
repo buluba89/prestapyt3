@@ -21,14 +21,14 @@ def _process(doc, tag, tag_value):
     @param tag_value: tag value
     @return: node or nodelist, be careful
     """
-    if isinstance(tag_value, dict) and 'value' in tag_value.keys() == ['value']:
+    if isinstance(tag_value, dict) and 'value' in list(tag_value.keys()) == ['value']:
         tag_value = tag_value['value']
 
     if tag_value is None:
         tag_value = ''
 
     # Create a new node for simple values
-    if isinstance(tag_value, int) or isinstance(tag_value, (str, unicode)):
+    if isinstance(tag_value, int) or isinstance(tag_value, str):
         return _process_simple(doc, tag, tag_value)
 
     # Return a list of nodes with same tag
@@ -46,7 +46,7 @@ def _process(doc, tag, tag_value):
             return node
         else:
             node = doc.createElement(tag)
-            nodelist, attrs = _process_complex(doc, tag_value.items())
+            nodelist, attrs = _process_complex(doc, list(tag_value.items()))
             for child in nodelist:
                 node.appendChild(child)
             for attr in attrs:
@@ -83,7 +83,7 @@ def _process_attr(doc, attr_value):
     @return: list of attributes
     """
     attrs = []
-    for attr_name, attr_value in attr_value.items():
+    for attr_name, attr_value in list(attr_value.items()):
         if isinstance(attr_value, dict):
             # FIXME: NS is not in the final xml, check why
             attr = doc.createAttributeNS(attr_value.get('xmlns', ''), attr_name)
@@ -103,7 +103,7 @@ def _process_simple(doc, tag, tag_value):
     @return: node
     """
     node = doc.createElement(tag)
-    node.appendChild(doc.createTextNode(unicode(tag_value)))
+    node.appendChild(doc.createTextNode(str(tag_value)))
     return node
 
 def dict2xml(data, encoding='UTF-8'):
@@ -116,7 +116,7 @@ def dict2xml(data, encoding='UTF-8'):
     doc = getDOMImplementation().createDocument(None, None, None)
     if len(data) > 1:
         raise Exception('Only one root node allowed')
-    root, _ = _process_complex(doc, data.items())
+    root, _ = _process_complex(doc, list(data.items()))
     doc.appendChild(root[0])
     return doc.toxml(encoding)
 
@@ -156,7 +156,7 @@ if __name__ == '__main__':
                                                          'id': '8'},
                                                'value': None}],},}}
 
-    print dict2xml(x)
+    print(dict2xml(x))
 
     x = {'prestashop': {'address': {'address1': '1 Infinite Loop',
                                 'address2': None,
@@ -192,10 +192,10 @@ if __name__ == '__main__':
                                                 },
     }}}
 
-    print dict2xml(x)
+    print(dict2xml(x))
 
-    import xml2dict
-    from prestapyt import PrestaShopWebService
+    from . import xml2dict
+    from .prestapyt import PrestaShopWebService
     prestashop = PrestaShopWebService('http://localhost:8080/api',
                                       'BVWPFFYBT97WKM959D7AVVD0M4815Y1L')
 

@@ -20,19 +20,19 @@
 __author__ = "Guewen Baconnier <guewen.baconnier@gmail.com>"
 __version__ = "0.6.1"
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import warnings
 import httplib2
 import mimetypes
-import xml2dict
-import dict2xml
-import unicode_encode
+from . import xml2dict
+from . import dict2xml
+from . import unicode_encode
 
 from xml.parsers.expat import ExpatError
 from distutils.version import LooseVersion
 try:
     from xml.etree import cElementTree as ElementTree
-except ImportError, e:
+except ImportError as e:
     from xml.etree import ElementTree
 
 
@@ -182,7 +182,7 @@ class PrestaShopWebService(object):
             self.http_client.follow_all_redirects = True
 
         if self.debug:
-            print "Execute url: %s / method: %s" % (url, method)
+            print("Execute url: %s / method: %s" % (url, method))
 
         request_headers = self.headers.copy()
         request_headers.update(add_headers)
@@ -191,8 +191,8 @@ class PrestaShopWebService(object):
         status_code = int(header['status'])
 
         if self.debug: # TODO better debug logs
-            print ("Response code: %s\nResponse headers:\n%s\nResponse body:\n%s"
-                   % (status_code, header, content))
+            print(("Response code: %s\nResponse headers:\n%s\nResponse body:\n%s"
+                   % (status_code, header, content)))
 
         self._check_status_code(status_code, content)
         self._check_version(header.get('psws-version'))
@@ -210,7 +210,7 @@ class PrestaShopWebService(object):
 
         try:
             parsed_content = ElementTree.fromstring(content)
-        except ExpatError, err:
+        except ExpatError as err:
             raise PrestaShopWebServiceError('HTTP XML response is not parsable : %s' % (err,))
         except ElementTree.ParseError as e:
             raise PrestaShopWebServiceError('HTTP XML response is not parsable : %s. %s' % (e, content[:512]))
@@ -251,7 +251,7 @@ class PrestaShopWebService(object):
         """
         if self.debug:
             options.update({'debug': True})
-        return urllib.urlencode(options)
+        return urllib.parse.urlencode(options)
 
     def add(self, resource, content=None, files=None):
         """
@@ -280,7 +280,7 @@ class PrestaShopWebService(object):
             return self._parse(self._execute(url, 'POST', body=body, add_headers=headers)[2])
         elif xml is not None:
             headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-            return self._parse(self._execute(url, 'POST', body=urllib.urlencode({'xml': xml}), add_headers=headers)[2])
+            return self._parse(self._execute(url, 'POST', body=urllib.parse.urlencode({'xml': xml}), add_headers=headers)[2])
         else:
             raise PrestaShopWebServiceError('Undefined data.')
 
@@ -454,7 +454,7 @@ class PrestaShopWebServiceDict(PrestaShopWebService):
             if not response:
                 return False
             if level > 0:
-                return dive(response[response.keys()[0]], level=level-1)
+                return dive(response[list(response.keys())[0]], level=level-1)
             return response
 
         # returned response looks like :
@@ -528,9 +528,9 @@ class PrestaShopWebServiceDict(PrestaShopWebService):
 
 
 if __name__ == '__main__':
-    prestashop = PrestaShopWebServiceDict('http://localhost:8080/api',
-                                          'BVWPFFYBT97WKM959D7AVVD0M4815Y1L')
-    #prestashop.debug = True
+    prestashop = PrestaShopWebServiceDict('http://localhost/api',
+                                          'XZENPRDBAQ8JBX7XSBSKKMUCNTFYEU2N')
+    prestashop.debug = True
 
     from pprint import pprint
 
@@ -575,4 +575,4 @@ if __name__ == '__main__':
                                     'phone_mobile': '',
                                     'postcode': '95014',
                                     'vat_number': ''})
-    prestashop.add('addresses', address_data)
+    #prestashop.add('addresses', address_data)

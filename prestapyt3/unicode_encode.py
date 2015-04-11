@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def unicode2encoding(text, encoding='utf-8'):
-    if isinstance(text, unicode):
+    if isinstance(text, str):
         try:
             text = text.encode(encoding)
         except Exception:
@@ -10,6 +10,6 @@ def unicode2encoding(text, encoding='utf-8'):
     return text
 
 def encode(text, encoding='utf-8'):
-    if isinstance(text, (str, unicode)):
+    if isinstance(text, str):
         return unicode2encoding(text, encoding=encoding)
     return str(text)
