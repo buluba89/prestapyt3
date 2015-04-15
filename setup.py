@@ -11,15 +11,15 @@
 
 import os
 from setuptools import setup
-import prestapyt
+import prestapyt3
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     # Basic package information.
-    name = 'prestapyt',
-    version = prestapyt.prestapyt.__version__,
+    name = 'prestapyt3',
+    version = prestapyt3.prestapyt.__version__,
 
     # Packaging options.
     include_package_data = True,
@@ -32,7 +32,7 @@ setup(
     author_email = 'guewen.baconnier@gmail.com',
     license = 'GNU AGPL-3',
     url = 'http://github.com/guewen/prestapyt',
-    packages=['prestapyt'],
+    packages=['prestapyt3'],
     keywords = 'prestashop api client rest',
     description = 'A library to access Prestashop Web Service from Python.',
     long_description = read('README.md'),
