@@ -407,16 +407,16 @@ class PrestaShopWebService(object):
         @return: headers and body.
         """
         BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-        CRLF     = '\r\n'
+        CRLF     = '\r\n'.encode('ascii')
         L        = []
         for (key, filename, value) in files:
-            L.append('--' + BOUNDARY)
-            L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
-            L.append('Content-Type: %s' % self.get_content_type(filename))
-            L.append('')
+            L.append('--'.encode('ascii') + BOUNDARY.encode('ascii'))
+            L.append(('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename)).encode('ascii'))
+            L.append(('Content-Type: %s' % self.get_content_type(filename)).encode('ascii'))
+            L.append(''.encode('ascii'))
             L.append(value)
-        L.append('--' + BOUNDARY + '--')
-        L.append('')
+        L.append('--'.encode('ascii') + BOUNDARY.encode('ascii') + '--'.encode('ascii'))
+        L.append(''.encode('ascii'))
         body     = CRLF.join(L)
         headers  = {'Content-Type': 'multipart/form-data; boundary=%s' % BOUNDARY}
         return headers, body
