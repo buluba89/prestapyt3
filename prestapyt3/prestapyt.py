@@ -279,8 +279,7 @@ class PrestaShopWebService(object):
             headers, body = self.encode_multipart_formdata(files)
             return self._parse(self._execute(url, 'POST', body=body, add_headers=headers)[2])
         elif xml is not None:
-            headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-            return self._parse(self._execute(url, 'POST', body=urllib.parse.urlencode({'xml': xml}), add_headers=headers)[2])
+            return self._parse(self._execute(url, 'POST', body=xml, add_headers=headers)[2])
         else:
             raise PrestaShopWebServiceError('Undefined data.')
 
