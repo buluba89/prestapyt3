@@ -208,6 +208,18 @@ class PrestaShopWebService(object):
         if not content:
             raise PrestaShopWebServiceError('HTTP response is empty')
 
+        #Hack to fix "XML or text declaration not at start of entity".
+        #Sometimes prestashop response has a new line at the beginning so to fix this
+        #we strip new lines from the start of the response
+        i = -1
+        for c in content:
+            #if c == '\r' or c == '\n'
+            if c == 13 or c == 10:
+                i += 1
+            else:
+                break
+        content = content[i+1:]
+
         try:
             parsed_content = ElementTree.fromstring(content)
         except ExpatError as err:
